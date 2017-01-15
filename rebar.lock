@@ -1,0 +1,12 @@
+[{<<"epcap">>,
+  {git,"https://github.com/msantos/epcap.git",
+       {ref,"f796f3d80ce15f1b97cba57cb08cb183cbf1fe5f"}},
+  0},
+ {<<"lfe">>,
+  {git,"https://github.com/rvirding/lfe.git",
+       {ref,"d722d3662b191b61310dc9bba78f9a77f512b742"}},
+  0},
+ {<<"pkt">>,
+  {git,"https://github.com/msantos/pkt.git",
+       {ref,"a81fe923d027133d338b060e70e4cddd851ed362"}},
+  1}].
