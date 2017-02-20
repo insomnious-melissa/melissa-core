@@ -25,6 +25,18 @@
 ;;; Supervisor callbacks
 
 (defun init (_args)
-  `#(ok #(#(one_for_one 0 1) ())))
+  (let* ((start-order (list (child 'lhome-arp 'worker ())
+                            (child 'lhome-reactor 'worker ()))))
+    `#(ok #(#(one_for_one 5 10)
+            ,start-order))))
 
 ;;; Internal functions
+
+(defun child
+  "Helper function for declaring children of supervisor."
+  ((mod 'supervisor '())
+    `#(,mod #(,mod start_link ()) permanent 5000 supervisor (,mod)))
+  ((mod type '())
+   `#(,mod #(,mod start_link ()) permanent infinity ,type (,mod)))
+  ((mod type args)
+   `#(,mod #(,mod start_link (,args)) permanent 5000 ,type (,mod))))
