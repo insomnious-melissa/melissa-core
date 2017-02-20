@@ -1,16 +1,21 @@
 {application, 'lhome',
- [{description, "An LFE Application"},
+ [{description, "LFE Home Automation"},
   {vsn, "0.0.1"},
   {registered, []},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    inets,
+    crypto,
+    asn1,
+    public_key,
+    ssl
    ]},
   {mod, {'lhome-app', []}},
   {env, []},
   {modules, []},
 
   {contributors, []},
-  {licenses, []},
+  {licenses, ["MIT"]},
   {links, []}
  ]}.
