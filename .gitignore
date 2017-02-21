@@ -15,3 +15,5 @@ _deps
 _plugins
 _tdeps
 logs
+default.config
+rebar3.crashdump

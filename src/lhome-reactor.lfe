@@ -26,7 +26,10 @@
 ;; gen_server implementation
 
 (defun init (args)
-  (let* ((`#(ok ,timer) (timer:send_interval 1000
+  (let* ((`#(ok ,polling-interval) (lhome-config:get 'reactor
+                                                     'polling-interval
+                                                     'true))
+         (`#(ok ,timer) (timer:send_interval polling-interval
                                              'timer-tick)))
     `#(ok #(,timer))))
 
@@ -40,7 +43,7 @@
 
 (defun handle_info
   (('timer-tick state)
-   (react)
+   (timer-tick-reaction)
    `#(noreply ,state)))
 
 (defun terminate (reason state)
@@ -53,24 +56,36 @@
 
 ;; private API
 
-(defun react ()
+(defun timer-tick-reaction ()
   (gen_server:cast (server-name) 'react))
 
 (defun reactor-logic ()
   (let* ((`#(ok ,current-arps) (lhome-arp:current))
          (filtered-arps (filter-arps current-arps)))
     (if (> (length filtered-arps) 0)
-      (progn (io:format "Found ARP: ~p~n" (list filtered-arps))
+      (progn (io:format "Found ARPs: ~p~n" (list filtered-arps))
              (make-request)))))
 
 (defun filter-arps (current-arps)
-  (lists:append
-   (lists:map (lambda (arp-pair)
-                (lists:filter (lambda (arp)
-                                (string:equal "50:f5:da"  ;; Dash button
-                                              (string:left arp 8)))
-                              arp-pair))
-              current-arps)))
+  (let* ((`#(ok ,arp-family) (lhome-config:get 'arp
+                                               'arp-family
+                                               'true)))
+    (lists:append
+     (lists:map (lambda (arp-pair)
+                  (lists:filter (lambda (arp)
+                                  (string:equal arp-family
+                                                (string:left arp 8)))
+                                arp-pair))
+                current-arps))))
 
 (defun make-request ()
-  (io:format "Some magic here!"))
+  (let* ((`#(ok ,make-request) (lhome-config:get 'reactor 'make-request 'true)))
+    (if make-request
+      (let* ((`#(ok ,ifttt-maker-event) (lhome-config:get 'ifttt-maker 'event))
+             (`#(ok ,ifttt-maker-token) (lhome-config:get 'ifttt-maker 'token))
+             (request-url (++ "https://maker.ifttt.com/trigger/"
+                              ifttt-maker-event
+                              "/with/key/"
+                              ifttt-maker-token)))
+        (io:format "Requesting ~p~n" (list request-url))
+        (httpc:request request-url)))))

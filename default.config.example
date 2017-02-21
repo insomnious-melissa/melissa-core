@@ -1,0 +1,16 @@
+[
+    {lhome, [
+        {arp, [
+            {'bpf-filter', "arp"},
+            {'arp-family', "50:f5:da"}
+        ]},
+        {reactor, [
+            {'polling-interval', 1000},
+            {'make-request', false}
+        ]},
+        {'ifttt-maker', [
+            {event, "ring_button_pressed"},
+            {token, "your_ifttt_maker_token_here"}
+        ]}
+    ]}
+].
