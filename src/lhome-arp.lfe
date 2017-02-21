@@ -32,8 +32,9 @@
 ;; gen_server implementation
 
 (defun init (args)
-  (epcap:start_link '(#(filter "arp")
-                      #(chroot "priv/tmp")))
+  (let* ((`#(ok ,bpf-filter) (lhome-config:get 'arp 'bpf-filter 'true)))
+    (epcap:start_link `(#(filter ,bpf-filter)
+                        #(chroot "priv/tmp"))))
   #(ok ()))
 
 (defun handle_call 

@@ -25,7 +25,8 @@
 ;;; Supervisor callbacks
 
 (defun init (_args)
-  (let* ((start-order (list (child 'lhome-arp 'worker ())
+  (let* ((start-order (list (child 'lhome-config 'worker ())
+                            (child 'lhome-arp 'worker ())
                             (child 'lhome-reactor 'worker ()))))
     `#(ok #(#(one_for_one 5 10)
             ,start-order))))
